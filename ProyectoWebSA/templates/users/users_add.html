@@ -1,0 +1,92 @@
+{% extends "pos/base.html" %}
+{% load static %}
+{% block title %}Agregar Usuario{% endblock title %}
+
+{% block stylesheets %}
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css ' %}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css">
+<link rel="stylesheet" href="{% static 'assets/bootstrap-touchspin-master/src/jquery.bootstrap-touchspin.css' %}">
+{% endblock stylesheets %}
+
+{% block heading %}Agregar Usuario{% endblock heading %}
+
+{% block content %}
+<div class="row ml-0 mb-3">
+    <a href="{% url 'Apps.users:users_list' %}">
+        <button type="button" class="btn btn-info font-weight-bold">
+            <i class="fas fa-long-arrow-alt-left mr-2"></i>
+            Volver
+        </button>
+    </a>
+</div>
+<div class="row">
+    <div class="card col-md-8">
+        <div class="card-body">
+            <form action="{% url 'Apps.users:users_add' %}"  method="post"  onsubmit="return validatePassword()">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Nombre</label>
+                        <input type="text" class="form-control" name="first_name" placeholder="John..." required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Email</label>
+                        <input type="email" name="email" class="form-control" placeholder="johndoe@gmail.com" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Phone number</label>
+                        <input type="text" name="phone" class="form-control" placeholder="(412) 727-2736" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputDescription">Address</label>
+                        <textarea name="address" class="form-control" placeholder="3ra calle 2-43 ..." rows="2" required></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Contraseña</label>
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Contraseña segura..." required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Confirmar Contraseña</label>
+                        <input type="password" class="form-control" name="confirm_password" placeholder="Confirmar contraseña..." required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success font-weight-bold">Crear Usuario</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>
+<script src="{% static 'assets/bootstrap-touchspin-master/src/jquery.bootstrap-touchspin.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.15/dist/sweetalert2.all.min.js"></script>
+<script>
+    function validatePassword() {
+        var password = document.getElementById("password").value;
+        var uppercaseRegex = /[A-Z]/;
+        var digitRegex = /\d/;
+        var symbolRegex = /[!@#$%^&*]/;
+
+        if (password.length < 8 || !uppercaseRegex.test(password) || !digitRegex.test(password) || !symbolRegex.test(password)) {
+            Swal.fire({
+                title: 'Error de Contraseña',
+                text: 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.',
+                icon: 'error'
+            });
+            return false; // Prevent form submission
+        }
+
+        return true; // Allow form submission
+    }
+</script>
+{% endblock javascripts %}

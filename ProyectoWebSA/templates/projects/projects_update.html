@@ -1,0 +1,97 @@
+{% extends "pos/base.html" %}
+
+{% block title %}Actualizar proyecto{% endblock title %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block heading %}Actualizar proyecto{% endblock heading %}
+
+{% block content %}
+<!--Volver-->
+<div class="row ml-0 mb-3">
+    <a href="{% url 'Apps.projects:projects_list' %}">
+        <button type="button" class="btn btn-info font-weight-bold">
+            <i class="fas fa-long-arrow-alt-left mr-2"></i>
+            Volver
+        </button>
+    </a>
+</div>
+<div class="row">
+    <div class="card col-md-8">
+        <div class="card-body">
+            <form action="{% url 'Apps.projects:projects_update' project.id %}"  method="post">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Nombre</label>
+                        <input type="text" class="form-control" name="name_P" value="{{project.nombre}}" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Costo</label>
+                        <input type="text" class="form-control" name="cost" value="{{project.costo}}" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Ubicacion</label>
+                        <input type="text" class="form-control" name="ubicacion_ciudad" value="{{project.ubicacion}}" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Cantidad de Usarios</label>
+                        <input type="text" class="form-control" name="cantidad" value="{{project.user_total}}" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">fecha Inicio</label>
+                        <input type="date" name="start_date" class="form-control" value="{{project.fecha_inicio|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputDescription">Fecha Final</label>
+                        <input type="date" name="end_date" class="form-control" value="{{ project.fecha_finalizacion_estimada|date:'Y-m-d' }}" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputDescription">Usuarios Asignados</label>
+                        <select name="selected_users" class="form-control" multiple >
+                            {% for user in assigned_users %}
+                                <option value="{{ user.id }}">{{ user.user.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputDescription">Eliminar Usuarios</label>
+                        <select name="users_to_remove" class="form-control" multiple >
+                            {% for user in assigned_users %}
+                                <option value="{{ user.id }}">{{ user.user.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputDescription">Agregar Usuarios</label>
+                        <select name="users_to_add" class="form-control" multiple >
+                            {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-success font-weight-bold">Crear proyecto</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

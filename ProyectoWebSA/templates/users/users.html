@@ -1,0 +1,167 @@
+{% extends "pos/base.html" %}
+{% load static %}
+{% block title %}Usuarios{% endblock title %}
+
+{% block stylesheets %}
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css ' %}" rel="stylesheet">
+<link href="{% static 'css/pagination_buttons.css ' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block heading %}Usuarios{% endblock heading %}
+{% block content %}
+
+    <div class="row ml-0 mb-3">
+        <a href="{% url 'Apps.users:users_add' %}"  >
+            <button type="button" class="btn btn-success font-weight-bold">
+                    <i class="fas fa-plus mr-2"></i>
+                    Crear nuevo Usuario
+            </button>
+        </a>
+    </div>
+
+    <div class="card shadow mb-12">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Usuarios</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th style="width:5%">#</th>
+                            <th style="width:20%">Name</th>
+                            <th style="width:10%">Email</th>
+                            <th style="width:10%">Phone</th>
+                            <th style="width:25%">Adress</th>
+                            <th style="width:20%">Proyecto</th>
+                            <th style="width:15%">Deuda</th>
+                            <th class="text-center" style="width:10%">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user, userdate in users_with_data %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ userdate.phone }}</td> 
+                            <td>{{ userdate.address }}</td>  
+                            <td>{{ userdate.project.nombre }}</td>  
+                            <td>{{ userdate.debts }}</td>  
+                            <td class="text-center">
+                                <a href="{% url 'Apps.users:users_update' user.id userdate.id %}" class="text-decoration-none">
+                                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Actualizar usuario">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                </a>
+                                <a href="{% url 'Apps.users:users_pay' user.id userdate.id %}" class="text-decoration-none">
+                                    <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" title="Ver recibo">
+                                        <i class="fas fa-receipt"></i>
+                                    </button>
+                                </a>
+                                <a class="text-decoration-none">
+                                    <button rel="delete" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#exampleModal">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </a>
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Eliminar Usuario</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div id="updateThisText" class="modal-body">
+                                            ¿Estás seguro de que deseas eliminar el Usuario: {{user.username}} ?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                            <a id="updateThisURL" href="{% url 'Apps.users:users_delete' user.id %}" class="text-decoration-none">
+                                                <button type="button"  class="btn btn-danger">Eliminar</button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block javascripts %}
+<script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.3/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.3/js/buttons.colVis.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.3/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.3/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    tblCategories = $('#dataTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'print',
+                text: 'Imprimir <i class="fas fa-file ml-2"></i>',
+                titleAttr: 'Imprimir',
+                className: 'btn btn-info',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7],
+                },
+                customize: function (win) {
+                    $(win.document.body).find('table').find('tr').each(function (index) {
+                        if (index > 0) { // Skip the header row
+                            var cellValue = parseFloat($(this).find('td:eq(7)').text().replace(',', '')); // Assuming the data uses comma as a decimal separator
+                            if (cellValue <= 0) {
+                                $(this).remove();
+                            }
+                        }
+                    });
+                }
+            },
+        ],
+        deferRender: true,
+        columnDefs: [
+            {
+                targets: [0],
+                visible: false,
+                searchable: false,
+            },
+            {
+                targets: [-1],
+                orderable: false,
+            }
+        ],
+    });
+});
+
+$('#dataTable tbody')
+    // Evento cuando intentamos eliminar un proveedor
+    // Actualizamos el texto y href del botón de eliminación modal
+    .on('click', 'button[rel="delete"]', function () {
+    // Row variable
+    var tr = tblCategories.cell($(this).closest('td, li')).index();
+    row_data = ( tblCategories.row(tr.row).data());
+    user_id = row_data[0];
+    user_name = row_data[2]
+    new_delete_url  = 'delete/' + user_id;
+    document.getElementById("updateThisText").innerHTML = "¿Está seguro de que desea eliminar el usario: " + user_name + "?";
+    document.getElementById("updateThisURL").href=new_delete_url;
+    });
+</script>
+{% endblock javascripts %}
